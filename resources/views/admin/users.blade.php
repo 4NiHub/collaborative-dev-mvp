@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Users – EduAdmin</title>
+    <title>Users – SUSAdmin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin_reset.css') }}">
@@ -405,6 +405,22 @@
     </div>
 </div>
 
+<div class="logout-popup-overlay" id="deletePopup">
+    <div class="logout-popup-modal">
+        <div class="logout-icon-large" style="background:#fee2e2; color:#dc2626;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+        </div>
+        <h3 class="logout-popup-title">Delete User</h3>
+        <p class="logout-popup-text">Are you sure you want to delete this user? This action cannot be undone.</p>
+        <div class="logout-actions">
+            <button class="logout-btn-cancel" onclick="hideDeletePopup()">Cancel</button>
+            <button class="logout-btn-confirm" id="confirmDeleteBtn">Delete</button>
+        </div>
+    </div>
+</div>
+
 <script src="{{ asset('js/admin-api.js') }}?v={{ time() }}"></script>
 {{-- <script src="{{ asset('js/admin-api.js') }}"></script> --}}
 
@@ -450,7 +466,7 @@
                     <button class="action-btn" onclick="openEditModal('${u.id}')" title="Edit User">
                         <img src="{{ asset('images/admin_icons/view.png') }}" style="width:14px;height:14px;">
                     </button>
-                    <button class="action-btn del" onclick="deleteUser('${u.id}')" title="Delete User">
+                    <button class="action-btn del" onclick="promptDelete('${u.id}')" title="Delete User">
                         <img src="{{ asset('images/admin_icons/delete.png') }}" style="width:14px;height:14px; filter: invert(27%) sepia(91%) saturate(5421%) hue-rotate(345deg) brightness(93%) contrast(93%);">
                     </button>
                 </td>
@@ -567,17 +583,32 @@
         }
     }
 
-    // 6. Delete Logic
-    async function deleteUser(id) {
-        if (!confirm('Are you sure you want to delete this user?')) return;
+    // 6. Delete Logic (New Custom UI)
+    let userToDelete = null;
+
+    function promptDelete(id) {
+        userToDelete = id;
+        document.getElementById('deletePopup').classList.add('show');
+    }
+
+    function hideDeletePopup() {
+        userToDelete = null;
+        document.getElementById('deletePopup').classList.remove('show');
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+        if (!userToDelete) return;
         try {
-            await AdminUserAPI.deleteUser(id);
-            allUsers = allUsers.filter(u => u.id !== id);
-            filterUsers(); // Re-apply current filters after deleting
+            await AdminUserAPI.deleteUser(userToDelete);
+            allUsers = allUsers.filter(u => u.id !== userToDelete);
+            filterUsers();
+            
+            hideDeletePopup();
+            showToast('User deleted successfully!'); // Reuses your awesome toast notification!
         } catch (err) {
             alert('Delete failed: ' + err.message);
         }
-    }
+    });
 
     // 7. Event Listeners & UI Toggles
     window.addEventListener('DOMContentLoaded', init);

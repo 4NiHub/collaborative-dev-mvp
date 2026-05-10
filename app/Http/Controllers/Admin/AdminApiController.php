@@ -807,13 +807,35 @@ class AdminApiController extends Controller
     {
         $realId = (int) preg_replace('/[^0-9]/', '', $id);
         
-        // Update the user's status (Active/Banned)
-        DB::table('users')->where('user_id', $realId)->update([
-            'status' => strtolower($request->input('status', 'active')),
-            'updated_at' => now()
-        ]);
+        // 1. Update basic Users table (Status & Email)
+        $userUpdate = ['updated_at' => now()];
+        if ($request->has('status')) $userUpdate['status'] = strtolower($request->input('status'));
+        if ($request->has('email'))  $userUpdate['email'] = $request->input('email');
+        
+        DB::table('users')->where('user_id', $realId)->update($userUpdate);
 
-        return response()->json(['message' => 'User status updated!']);
+        // 2. If the request came from the Teachers page:
+        if ($request->has('firstName') && $request->has('lastName')) {
+            DB::table('mentors')->where('user_id', $realId)->update([
+                'name' => $request->input('firstName'),
+                'surname' => $request->input('lastName'),
+                'email' => $request->input('email'),
+                'department' => $request->input('department', 'General'),
+                'phone_number' => $request->input('phone', 'N/A')
+            ]);
+        } 
+        // 3. If the request came from the General Users page:
+        else if ($request->has('name')) {
+            $names = explode(' ', $request->input('name'), 2);
+            $firstName = $names[0];
+            $lastName = $names[1] ?? '';
+            
+            // Try updating both; it will safely ignore the one they don't belong to
+            DB::table('mentors')->where('user_id', $realId)->update(['name' => $firstName, 'surname' => $lastName, 'email' => $request->input('email')]);
+            DB::table('students')->where('user_id', $realId)->update(['name' => $firstName, 'surname' => $lastName]);
+        }
+
+        return response()->json(['message' => 'User updated successfully!']);
     }
 
     public function deleteUser($id)
