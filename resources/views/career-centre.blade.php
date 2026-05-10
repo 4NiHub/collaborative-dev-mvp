@@ -961,7 +961,7 @@
 
             <div class="submit-modal-actions">
                 <button class="btn-cancel-modal" onclick="closeApplyModal()">Cancel</button>
-                <button class="btn-confirm-submit" id="confirmApplyBtn" onclick="submitApplicationFiles()">Submit Application</button>
+                <button class="btn-confirm-submit" id="confirmApplyBtn" onclick="submitApplicationFiles(event)">Submit Application</button>
             </div>
         </div>
     </div>
