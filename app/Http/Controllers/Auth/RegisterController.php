@@ -40,7 +40,7 @@ class RegisterController extends Controller
                 'role_id'       => $roleId,
                 'email'         => $request->email,
                 'password_hash' => Hash::make($request->password),
-                'creation_time' => now(),
+                'created_at'    => now(),
             ]);
     
             // Refresh to get the auto-generated user_id
