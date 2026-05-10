@@ -224,6 +224,105 @@ class AuthController extends Controller
         return view('auth.two-factor');
     }
 
+    // // ─────────────────────────────────────────────
+    // //  VERIFY 2FA
+    // // ─────────────────────────────────────────────
+    // public function verify2FA(Request $request)
+    // {
+    //     $request->validate([
+    //         'code' => ['required', 'string', 'size:6', 'regex:/^\d{6}$/'],
+    //     ]);
+
+    //     $userId = $request->session()->get('2fa_user_id');
+
+    //     if (! $userId) {
+    //         return redirect()->route('login')
+    //             ->with('error', 'Session expired. Please log in again.');
+    //     }
+
+    //     // Rate limit OTP attempts
+    //     $otpThrottle = '2fa_attempt:' . $userId;
+    //     if (RateLimiter::tooManyAttempts($otpThrottle, 3)) {
+    //         $request->session()->flush();
+    //         return redirect()->route('login')
+    //             ->with('error', 'Too many verification attempts. Please sign in again.');
+    //     }
+
+    //     $cacheKey = '2fa:' . $userId;
+    //     $stored   = Cache::get($cacheKey);
+
+    //     if (! $stored || now()->timestamp > $stored['expires_at']) {
+    //         Cache::forget($cacheKey);
+    //         $request->session()->flush();
+    //         return redirect()->route('login')
+    //             ->with('error', 'Your verification code has expired. Please sign in again.');
+    //     }
+
+    //     if (! Hash::check($request->code, $stored['code_hash'])) {
+    //         RateLimiter::hit($otpThrottle, 60);
+    //         $remaining = 3 - RateLimiter::attempts($otpThrottle);
+            
+    //         // Return JSON instead of back() if the request wants JSON
+    //         if ($request->expectsJson()) {
+    //             return response()->json([
+    //                 'success' => false, 
+    //                 'message' => "Invalid code. {$remaining} attempt(s) remaining."
+    //             ], 422);
+    //         }
+            
+    //         return back()->with('error', "Invalid code. {$remaining} attempt(s) remaining.");
+    //     }
+
+    //     // ── Success ──
+    //     Cache::forget($cacheKey);
+    //     RateLimiter::clear($otpThrottle);
+
+    //     $user = User::findOrFail($userId);
+
+    //     // Generate API token
+    //     $token = $user->createToken('sus-portal-auth-token')->plainTextToken;
+
+    //     // Determine frontend-friendly role name
+    //     $roleName = match ($user->role_id) {
+    //         1 => 'student',
+    //         2 => 'teacher',
+    //         3 => 'staff',
+    //         4 => 'admin',
+    //         default => 'unknown',
+    //     };
+
+    //     // Update last login (good security practice)
+    //     $user->update([
+    //         'last_login_at' => now(),
+    //         'last_login_ip' => $request->ip(),
+    //     ]);
+
+    //     // Regenerate session (important for security even in API+Blade hybrid apps)
+    //     $request->session()->regenerate();
+
+    //     // Optional: keep web session login if you still have some Blade-only flows
+    //     // (most people keep it during transition from Blade → SPA)
+    //     Auth::login($user, $remember = false);
+
+    //     // Clear 2FA pending data AND the evaluator code
+    //     $request->session()->forget(['2fa_user_id', '2fa_email', '2fa_expires_at', 'demo_2fa_code']);
+
+    //     return response()->json([
+    //         'success'  => true,
+    //         'token'    => $token,
+    //         'role'     => $roleName,               // ← frontend needs this
+    //         'message'  => 'Verification successful',
+    //         'redirect' => route('dashboard'),      // or '/dashboard' — both fine
+    //         // Optional but very useful for immediate UI update without extra request
+    //         'user' => [
+    //             'id'       => $user->user_id,
+    //             'email'    => $user->email,
+    //             'full_name'=> $user->full_name,    // if you have accessor
+    //             'role'     => $roleName,
+    //         ]
+    //     ]);
+    // }
+
     // ─────────────────────────────────────────────
     //  VERIFY 2FA
     // ─────────────────────────────────────────────
@@ -236,16 +335,22 @@ class AuthController extends Controller
         $userId = $request->session()->get('2fa_user_id');
 
         if (! $userId) {
-            return redirect()->route('login')
-                ->with('error', 'Session expired. Please log in again.');
+            // 🚨 FIX: Return JSON instead of redirect
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please log in again.'
+            ], 401);
         }
 
         // Rate limit OTP attempts
         $otpThrottle = '2fa_attempt:' . $userId;
         if (RateLimiter::tooManyAttempts($otpThrottle, 3)) {
             $request->session()->flush();
-            return redirect()->route('login')
-                ->with('error', 'Too many verification attempts. Please sign in again.');
+            // 🚨 FIX: Return JSON instead of redirect
+            return response()->json([
+                'success' => false,
+                'message' => 'Too many verification attempts. Please refresh and sign in again.'
+            ], 429);
         }
 
         $cacheKey = '2fa:' . $userId;
@@ -254,23 +359,22 @@ class AuthController extends Controller
         if (! $stored || now()->timestamp > $stored['expires_at']) {
             Cache::forget($cacheKey);
             $request->session()->flush();
-            return redirect()->route('login')
-                ->with('error', 'Your verification code has expired. Please sign in again.');
+            // 🚨 FIX: Return JSON instead of redirect
+            return response()->json([
+                'success' => false,
+                'message' => 'Your verification code has expired (3 minutes). Please sign in again.'
+            ], 422);
         }
 
         if (! Hash::check($request->code, $stored['code_hash'])) {
             RateLimiter::hit($otpThrottle, 60);
             $remaining = 3 - RateLimiter::attempts($otpThrottle);
             
-            // Return JSON instead of back() if the request wants JSON
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => "Invalid code. {$remaining} attempt(s) remaining."
-                ], 422);
-            }
-            
-            return back()->with('error', "Invalid code. {$remaining} attempt(s) remaining.");
+            // 🚨 FIX: Always return JSON
+            return response()->json([
+                'success' => false, 
+                'message' => "Invalid code. {$remaining} attempt(s) remaining."
+            ], 422);
         }
 
         // ── Success ──
@@ -297,12 +401,9 @@ class AuthController extends Controller
             'last_login_ip' => $request->ip(),
         ]);
 
-        // Regenerate session (important for security even in API+Blade hybrid apps)
+        // Regenerate session
         $request->session()->regenerate();
-
-        // Optional: keep web session login if you still have some Blade-only flows
-        // (most people keep it during transition from Blade → SPA)
-        Auth::login($user, $remember = false);
+        Auth::login($user, false);
 
         // Clear 2FA pending data AND the evaluator code
         $request->session()->forget(['2fa_user_id', '2fa_email', '2fa_expires_at', 'demo_2fa_code']);
@@ -310,14 +411,12 @@ class AuthController extends Controller
         return response()->json([
             'success'  => true,
             'token'    => $token,
-            'role'     => $roleName,               // ← frontend needs this
+            'role'     => $roleName,
             'message'  => 'Verification successful',
-            'redirect' => route('dashboard'),      // or '/dashboard' — both fine
-            // Optional but very useful for immediate UI update without extra request
+            'redirect' => route('dashboard'),
             'user' => [
                 'id'       => $user->user_id,
                 'email'    => $user->email,
-                'full_name'=> $user->full_name,    // if you have accessor
                 'role'     => $roleName,
             ]
         ]);
