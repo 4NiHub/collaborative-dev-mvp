@@ -513,7 +513,9 @@
             filterUsers(); 
             
             closeAddModal();
-            showToast('User successfully created!'); // Optional: Use your toast notification!
+            
+            // 🚨 BUG 2 FIX: Use a standard alert instead of the missing showToast function
+            alert('User successfully created!'); 
             
         } catch (err) {
             alert('Failed to add user: ' + err.message);
