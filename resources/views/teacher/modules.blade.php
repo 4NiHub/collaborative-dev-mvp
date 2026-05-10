@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <style>
+        :root {
+            --table-text: #1e293b;
+        }
+
+        body.dark-mode {
+            --table-text: #f1f5f9;
+        }
+
         .app-container { display:flex; min-height:100vh; }
 
         /* Sidebar */
@@ -1103,9 +1111,8 @@
         }
 
         tbody.innerHTML = students.map(function(s) {
-            var gc = getGradeClass(s.grade || 'A'); // Default to A badge for demo
+            var gc = getGradeClass(s.grade || 'A');
             
-            // 🚨 PRESENTATION FIX: Use hardcoded values if DB fields are empty
             var mt = s.midterm || s.midterm_score || 85; 
             var fn = s.final || s.final_score || 92;
             var displayGrade = s.grade || 'A';
@@ -1117,8 +1124,8 @@
                     <div class="student-id">${s.displayId || 'STU00'+s.id}</div>
                     <div class="group-chip-sm">${s.group}</div>
                 </td>
-                <td style="font-weight:600; color:#1e293b;">${mt}</td>
-                <td style="font-weight:600; color:#1e293b;">${fn}</td>
+                <td style="font-weight:600; color: var(--table-text);">${mt}</td>
+                <td style="font-weight:600; color: var(--table-text);">${fn}</td>
                 <td><span class="grade-badge ${getGradeClass(displayGrade)}">${displayGrade}</span></td>
                 <td><span class="status-${displayStatus === 'PASS' ? 'pass' : 'fail'}">${displayStatus}</span></td>
             </tr>`;
