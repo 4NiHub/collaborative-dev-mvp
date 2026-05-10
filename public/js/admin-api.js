@@ -4,7 +4,8 @@ const USE_MOCK     = false;           // Turns OFF the fake data
 // Use the exact same token storage as your main api.js
 function getAdminToken()   { return localStorage.getItem('auth_token'); }
 function deleteAdminToken(){ 
-    localStorage.removeItem('auth_token'); 
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('userToken'); 
     localStorage.removeItem('userRole'); 
 }
 

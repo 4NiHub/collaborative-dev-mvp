@@ -155,6 +155,7 @@ const AuthAPI = {
 
         // Clear local storage
         deleteToken();
+        localStorage.removeItem('userToken');
         localStorage.removeItem('userRole');
         
         // Final redirect
