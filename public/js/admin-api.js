@@ -234,8 +234,8 @@ const AdminTeacherAPI = {
         return adminApiCall('/teachers', { method: 'POST', body: JSON.stringify(data) });
     },
     updateTeacher: async (id, data) => {
-        if (USE_MOCK) { const i = ADMIN_MOCK.teachers.data.findIndex(t => t.id == id); if (i > -1) ADMIN_MOCK.teachers.data[i] = { ...ADMIN_MOCK.teachers.data[i], ...data }; return { data: ADMIN_MOCK.teachers.data[i] }; }
-        return adminApiCall(`/teachers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        if (USE_MOCK) { /* ... */ }
+        return adminApiCall(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
     },
     deleteTeacher: async (id) => {
         if (USE_MOCK) { ADMIN_MOCK.teachers.data = ADMIN_MOCK.teachers.data.filter(t => t.id != id); return null; }

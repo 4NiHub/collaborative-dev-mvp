@@ -321,41 +321,41 @@
     </div>
 </div> --}}
 
-<div id="addUserModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.8); z-index:999; align-items:center; justify-content:center;">
-    <div style="background:#1e293b; width:450px; border-radius:12px; border:1px solid #334155; padding:24px; color:#f8fafc;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0; font-size:18px;">Add New User</h3>
-            <button onclick="document.getElementById('addUserModal').style.display='none'" style="background:none; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">✕</button>
+<div id="addUserModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">Add New User</div>
+            <button class="modal-close" onclick="closeAddModal()">✕</button>
         </div>
         
         <div style="display:flex; flex-direction:column; gap:16px;">
             <div>
-                <label style="display:block; font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:6px;">Full Name</label>
-                <input type="text" id="addFullName" class="form-input" placeholder="e.g. Naruto Uzumaki" style="width:100%; background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:8px; color:white;">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="addFullName" class="form-input" placeholder="e.g. Naruto Uzumaki">
             </div>
             
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
-                    <label style="display:block; font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:6px;">Role</label>
-                    <select id="addRole" class="form-input" style="width:100%; background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:8px; color:white;">
+                    <label class="form-label">Role</label>
+                    <select id="addRole" class="form-select">
                         <option value="student">Student</option>
                         <option value="teacher">Teacher</option>
                     </select>
                 </div>
                 <div>
-                    <label style="display:block; font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:6px;">Password</label>
-                    <input type="password" id="addPassword" class="form-input" placeholder="Minimum 6 chars" style="width:100%; background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:8px; color:white;">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="addPassword" class="form-input" placeholder="Minimum 6 chars">
                 </div>
             </div>
 
             <div>
-                <label style="display:block; font-size:13px; color:#94a3b8; font-weight:600; margin-bottom:6px;">Email</label>
-                <input type="email" id="addEmail" class="form-input" placeholder="N.Uzumaki@wlv.ac.uk" style="width:100%; background:#0f172a; border:1px solid #334155; padding:10px 12px; border-radius:8px; color:white;">
+                <label class="form-label">Email</label>
+                <input type="email" id="addEmail" class="form-input" placeholder="N.Uzumaki@wlv.ac.uk">
             </div>
 
-            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
-                <button onclick="document.getElementById('addUserModal').style.display='none'" style="padding:10px 16px; background:#334155; border:none; border-radius:8px; font-weight:600; cursor:pointer;">Cancel</button>
-                <button onclick="saveNewUser()" style="padding:10px 16px; background:#3b82f6; border:none; border-radius:8px; font-weight:600; cursor:pointer;">Add User</button>
+            <div class="modal-actions">
+                <button onclick="closeAddModal()" class="btn-secondary" style="background:#334155; color:white;">Cancel</button>
+                <button onclick="saveNewUser()" class="btn-primary">Add User</button>
             </div>
         </div>
     </div>

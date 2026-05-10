@@ -815,4 +815,18 @@ class AdminApiController extends Controller
 
         return response()->json(['message' => 'User status updated!']);
     }
+
+    public function deleteUser($id)
+    {
+        // 1. Extract the actual integer ID (e.g., from "STU019" -> 19)
+        $realId = (int) preg_replace('/[^0-9]/', '', $id);
+        
+        // 2. Delete the user from the database
+        // (Assuming your database has ON DELETE CASCADE, this will safely 
+        // remove them from the students/mentors tables as well).
+        DB::table('users')->where('user_id', $realId)->delete();
+
+        // 3. Return a successful JSON response
+        return response()->json(['message' => 'User deleted successfully!']);
+    }
 }

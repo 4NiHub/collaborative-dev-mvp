@@ -799,8 +799,10 @@ function filteredSlots() {
 }
 
 const getTName = id => { const t = teachers.find(x => String(x.id) === String(id)); return t ? `${t.title} ${t.firstName} ${t.lastName}` : 'Unknown'; };
-const getGName = id => { const g = groups.find(x => x.id === id);   return g ? g.name : String(id); };
-const getRName = id => { const r = rooms.find(x => x.id === id);    return r ? r.name : String(id); };
+
+const getGName = id => { const g = groups.find(x => String(x.id) === String(id));   return g ? g.name : String(id); };
+
+const getRName = id => { const r = rooms.find(x => String(x.id) === String(id)); return r ? r.name : String(id); };
 
 
 function renderTable() {

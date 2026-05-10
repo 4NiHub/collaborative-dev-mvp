@@ -1692,7 +1692,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Users Management
         Route::get('/users', [AdminApiController::class, 'getUsers']);
-        Route::post('/users', [AdminApiController::class, 'createUser']);       // ADD THIS
-        Route::put('/users/{id}', [AdminApiController::class, 'updateUser']);   // ADD THIS
+        Route::post('/users', [AdminApiController::class, 'createUser']);
+        Route::put('/users/{id}', [AdminApiController::class, 'updateUser']);
+        Route::delete('/users/{id}', [AdminApiController::class, 'deleteUser']);
     });
 });
