@@ -1541,7 +1541,12 @@
             document.getElementById('applyModalOverlay').classList.remove('active');
         }
 
-        async function submitApplicationFiles() {
+        // 1. Add 'event' inside the parentheses here 👇
+        async function submitApplicationFiles(event) {
+            
+            // 🚨 2. ADD THIS LINE: Stop the page from refreshing and killing the upload!
+            if (event) event.preventDefault(); 
+
             const isNew = document.querySelector('input[name="docChoice"]:checked').value === 'new';
             const cvFile = document.getElementById('cvUpload').files[0];
             const clFile = document.getElementById('clUpload').files[0];
@@ -1564,6 +1569,8 @@
                     formData.append('cover_letter', clFile);
                 }
 
+                // Note: Make sure 'CareerAPI' is the correct name. 
+                // In your api.js file, it might actually be called 'StudentAPI.applyForJob'
                 await CareerAPI.applyForJob(currentJobId, formData);
                 
                 closeApplyModal();
