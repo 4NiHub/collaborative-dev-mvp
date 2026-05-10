@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>SUS Portal - Login</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/sus_logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/sus_logo.png') }}" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="{{ asset('images/sus_logo_dark.png') }}" media="(prefers-color-scheme: dark)">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
