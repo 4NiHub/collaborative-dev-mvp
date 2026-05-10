@@ -512,13 +512,16 @@
             // CRITICAL FIX: Run the filters instead of blindly rendering everyone!
             filterUsers(); 
             
+            // Inside async function saveNewUser()
+            
             closeAddModal();
             
-            // 🚨 BUG 2 FIX: Use a standard alert instead of the missing showToast function
-            alert('User successfully created!'); 
+            // 🚨 Use the new UI upgrade!
+            showToast('User successfully created!'); 
             
         } catch (err) {
-            alert('Failed to add user: ' + err.message);
+            // You can even use it for errors!
+            showToast('Failed to add user: ' + err.message, 'error');
         }
     }
 
@@ -617,6 +620,68 @@
     }
     function hideLogoutPopup() {
         document.getElementById('logoutPopup').classList.remove('show');
+    }
+
+    // ==========================================
+    // AMAZING UI UPGRADE: Toast Notification
+    // ==========================================
+    function showToast(message, type = 'success') {
+        // 1. Create a container if it doesn't exist
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.cssText = 'position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; pointer-events: none;';
+            document.body.appendChild(container);
+        }
+
+        // 2. Detect Light/Dark Mode for styling
+        const isDark = document.body.classList.contains('dark-mode');
+        const bg = isDark ? '#1e293b' : '#ffffff';
+        const text = isDark ? '#f8fafc' : '#1e293b';
+        const border = isDark ? '#334155' : '#e2e8f0';
+        const iconColor = type === 'success' ? '#10b981' : '#ef4444';
+        
+        // Animated SVG Icon
+        const icon = type === 'success' 
+            ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`
+            : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+
+        // 3. Build the beautiful Toast card
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            background: ${bg};
+            color: ${text};
+            border: 1px solid ${border};
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        `;
+
+        toast.innerHTML = `${icon} <span>${message}</span>`;
+        container.appendChild(toast);
+
+        // 4. Trigger the Slide-In Animation
+        setTimeout(() => {
+            toast.style.transform = 'translateX(0)';
+            toast.style.opacity = '1';
+        }, 10);
+
+        // 5. Trigger the Slide-Out Animation and delete after 3.5 seconds
+        setTimeout(() => {
+            toast.style.transform = 'translateX(120%)';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 400);
+        }, 3500);
     }
 </script>
 </body>

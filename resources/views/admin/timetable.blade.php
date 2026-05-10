@@ -914,7 +914,7 @@ async function saveSlot() {
     const day       = document.getElementById('fDay').value;
     const time      = document.getElementById('fTime').value;
     if (!subjectId || !teacherId || !groupId || !roomId) { showWarn('Subject, Teacher, Group and Room are required.'); return; }
-    const subj = subjects.find(s => s.id === subjectId);
+    const subj = subjects.find(s => s.id == subjectId);
     const data = { day, time, type, subjectId, groupId, roomId, teacherId: parseInt(teacherId), subject: subj ? subj.name : subjectId };
     try {
         if (editingId) {
