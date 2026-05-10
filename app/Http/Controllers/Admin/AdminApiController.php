@@ -851,4 +851,35 @@ class AdminApiController extends Controller
         // 3. Return a successful JSON response
         return response()->json(['message' => 'User deleted successfully!']);
     }
+
+    public function updateTeacher(\Illuminate\Http\Request $request, $id)
+    {
+        // 1. Extract the number from the frontend ID (e.g., "TCH002" -> 2)
+        $realId = (int) preg_replace('/[^0-9]/', '', $id);
+
+        // 2. Safely find the teacher in the database
+        $mentor = DB::table('mentors')->where('mentor_id', $realId)->first() 
+                  ?? DB::table('mentors')->where('id', $realId)->first();
+
+        if (!$mentor) {
+            return response()->json(['message' => 'Teacher not found!'], 404);
+        }
+
+        // 3. Update their Teacher Profile
+        DB::table('mentors')->where('user_id', $mentor->user_id)->update([
+            'name' => $request->input('firstName'),
+            'surname' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'department' => $request->input('department', 'General'),
+            'phone_number' => $request->input('phone', 'N/A')
+        ]);
+
+        // 4. Update their Main Login Account
+        DB::table('users')->where('user_id', $mentor->user_id)->update([
+            'email' => $request->input('email'),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['message' => 'Teacher updated successfully!']);
+    }
 }

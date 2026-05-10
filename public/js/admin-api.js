@@ -235,7 +235,7 @@ const AdminTeacherAPI = {
     },
     updateTeacher: async (id, data) => {
         if (USE_MOCK) { /* ... */ }
-        return adminApiCall(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        return adminApiCall(`/teachers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
     },
     deleteTeacher: async (id) => {
         if (USE_MOCK) { ADMIN_MOCK.teachers.data = ADMIN_MOCK.teachers.data.filter(t => t.id != id); return null; }
