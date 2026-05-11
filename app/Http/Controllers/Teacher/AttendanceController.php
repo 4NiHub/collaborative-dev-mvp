@@ -246,7 +246,7 @@ class AttendanceController extends \App\Http\Controllers\Controller
             ->select('timetable.session_id')
             ->first();
 
-        // Fallback for irregular sessions (optional but helpful)
+        // Fallback for irregular sessions
         if (!$session) {
              $session = DB::table('timetable')
                 ->join('subjects_groups_bridge_table as bridge', 'timetable.subject_group_id', '=', 'bridge.subject_group_id')
